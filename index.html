@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Service Upgrade Cost Estimator</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; padding: 20px; max-width: 700px; }
+    label { display: block; margin-top: 10px; }
+    input, select { width: 100%; padding: 8px; margin-top: 5px; }
+    button { margin-top: 20px; padding: 10px 20px; }
+    .result { margin-top: 20px; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h1>Service Upgrade Cost Estimator</h1>
+
+  <label for="currentPanel">Current Panel Size</label>
+  <select id="currentPanel">
+    <option value="100">100A</option>
+    <option value="125">125A</option>
+    <option value="150">150A</option>
+    <option value="200">200A</option>
+  </select>
+
+  <label for="targetPanel">Target Panel Size</label>
+  <select id="targetPanel">
+    <option value="200">200A</option>
+    <option value="225">225A</option>
+    <option value="320">320A</option>
+    <option value="400">400A</option>
+  </select>
+
+  <label for="distance">Distance from Meter to Panel (ft)</label>
+  <input type="number" id="distance" value="20">
+
+  <label for="serviceType">Service Type</label>
+  <select id="serviceType">
+    <option value="overhead">Overhead</option>
+    <option value="underground">Underground</option>
+  </select>
+
+  <label for="panelBrand">Preferred Panel Brand</label>
+  <select id="panelBrand">
+    <option value="standard">Standard</option>
+    <option value="premium">Premium</option>
+  </select>
+
+  <label for="trenching">Need Trenching?</label>
+  <select id="trenching">
+    <option value="no">No</option>
+    <option value="yes">Yes</option>
+  </select>
+
+  <label for="permitFee">Permit Fees ($)</label>
+  <input type="number" id="permitFee" value="500">
+
+  <label for="laborHours">Estimated Labor Hours</label>
+  <input type="number" id="laborHours" value="16">
+
+  <label for="laborRate">Hourly Labor Rate ($)</label>
+  <input type="number" id="laborRate" value="125">
+
+  <label for="utilityCoordination">Utility Coordination Required?</label>
+  <select id="utilityCoordination">
+    <option value="no">No</option>
+    <option value="yes">Yes</option>
+  </select>
+
+  <button onclick="calculateCost()">Estimate Cost</button>
+
+  <div class="result" id="result"></div>
+
+  <script>
+    function calculateCost() {
+      const current = parseInt(document.getElementById('currentPanel').value);
+      const target = parseInt(document.getElementById('targetPanel').value);
+      const distance = parseFloat(document.getElementById('distance').value);
+      const serviceType = document.getElementById('serviceType').value;
+      const panelBrand = document.getElementById('panelBrand').value;
+      const trenching = document.getElementById('trenching').value;
+      const permitFee = parseFloat(document.getElementById('permitFee').value);
+      const laborHours = parseFloat(document.getElementById('laborHours').value);
+      const laborRate = parseFloat(document.getElementById('laborRate').value);
+      const utilityCoordination = document.getElementById('utilityCoordination').value;
+
+      let baseCost = (target - current) * 10;
+      if (panelBrand === 'premium') baseCost += 1000;
+      if (serviceType === 'underground') baseCost += distance * 10;
+      else baseCost += distance * 5;
+      if (trenching === 'yes') baseCost += distance * 20;
+      if (utilityCoordination === 'yes') baseCost += 750;
+
+      const laborCost = laborHours * laborRate;
+      const totalCost = baseCost + permitFee + laborCost;
+
+      document.getElementById('result').innerText = `Estimated Cost: $${totalCost.toFixed(2)}`;
+    }
+  </script>
+</body>
+</html>
