@@ -9,7 +9,8 @@
     label { display: block; margin-top: 10px; }
     input, select { width: 100%; padding: 8px; margin-top: 5px; }
     button { margin-top: 20px; padding: 10px 20px; }
-    .result { margin-top: 20px; font-weight: bold; }
+    .result, .breakdown { margin-top: 20px; font-weight: bold; }
+    .breakdown ul { padding-left: 20px; }
   </style>
 </head>
 <body>
@@ -70,6 +71,8 @@
   <button onclick="calculateCost()">Estimate Cost</button>
 
   <div class="result" id="result"></div>
+  <div class="breakdown" id="breakdown"></div>
+  <div class="result" id="savings"></div>
 
   <script>
     function calculateCost() {
@@ -84,17 +87,37 @@
       const laborRate = parseFloat(document.getElementById('laborRate').value);
       const utilityCoordination = document.getElementById('utilityCoordination').value;
 
-      let baseCost = (target - current) * 10;
-      if (panelBrand === 'premium') baseCost += 1000;
-      if (serviceType === 'underground') baseCost += distance * 10;
-      else baseCost += distance * 5;
-      if (trenching === 'yes') baseCost += distance * 20;
-      if (utilityCoordination === 'yes') baseCost += 750;
-
+      // Cost calculation breakdown
+      const panelUpgradeCost = (target - current) * 30; // More realistic per-amp upgrade
+      const brandCost = panelBrand === 'premium' ? 1000 : 0;
+      const serviceCost = serviceType === 'underground' ? distance * 10 : distance * 5;
+      const trenchCost = trenching === 'yes' ? distance * 20 : 0;
+      const utilityCost = utilityCoordination === 'yes' ? 750 : 0;
       const laborCost = laborHours * laborRate;
-      const totalCost = baseCost + permitFee + laborCost;
 
-      document.getElementById('result').innerText = `Estimated Cost: $${totalCost.toFixed(2)}`;
+      const totalCost = panelUpgradeCost + brandCost + serviceCost + trenchCost + utilityCost + permitFee + laborCost;
+
+      // Estimate avoided upgrade cost if Savant Smart Panel used (we assume 80% savings potential)
+      const savantAlternativeCost = 1500; // Flat estimate for Smart Panel install (customizable)
+      const savings = totalCost - savantAlternativeCost;
+
+      // Output results
+      document.getElementById('result').innerText = `Estimated Upgrade Cost: $${totalCost.toFixed(2)}`;
+
+      document.getElementById('breakdown').innerHTML = `
+        <strong>Cost Breakdown:</strong>
+        <ul>
+          <li>Panel Upgrade: $${panelUpgradeCost.toFixed(2)}</li>
+          <li>Brand Premium: $${brandCost.toFixed(2)}</li>
+          <li>Service Distance Cost: $${serviceCost.toFixed(2)}</li>
+          <li>Trenching Cost: $${trenchCost.toFixed(2)}</li>
+          <li>Utility Coordination: $${utilityCost.toFixed(2)}</li>
+          <li>Permit Fees: $${permitFee.toFixed(2)}</li>
+          <li>Labor: $${laborCost.toFixed(2)}</li>
+        </ul>
+      `;
+
+      document.getElementById('savings').innerText = `By using Savant's Smart Panel instead of a full service upgrade, you could save: $${savings.toFixed(2)}`;
     }
   </script>
 </body>
