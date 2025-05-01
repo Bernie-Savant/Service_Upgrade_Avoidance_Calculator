@@ -68,6 +68,16 @@
     <option value="yes">Yes</option>
   </select>
 
+  <h2>Savant Smart Panel Configuration</h2>
+  <label for="modules20A"># of 20A 120V Circuits</label>
+  <input type="number" id="modules20A" value="0">
+
+  <label for="modules30A"># of 30A 240V Circuits</label>
+  <input type="number" id="modules30A" value="0">
+
+  <label for="modules60A"># of 60A 240V Circuits</label>
+  <input type="number" id="modules60A" value="0">
+
   <button onclick="calculateCost()">Estimate Cost</button>
 
   <div class="result" id="result"></div>
@@ -87,8 +97,12 @@
       const laborRate = parseFloat(document.getElementById('laborRate').value);
       const utilityCoordination = document.getElementById('utilityCoordination').value;
 
+      const modules20A = parseInt(document.getElementById('modules20A').value);
+      const modules30A = parseInt(document.getElementById('modules30A').value);
+      const modules60A = parseInt(document.getElementById('modules60A').value);
+
       // Cost calculation breakdown
-      const panelUpgradeCost = (target - current) * 30; // More realistic per-amp upgrade
+      const panelUpgradeCost = (target - current) * 30;
       const brandCost = panelBrand === 'premium' ? 1000 : 0;
       const serviceCost = serviceType === 'underground' ? distance * 10 : distance * 5;
       const trenchCost = trenching === 'yes' ? distance * 20 : 0;
@@ -97,8 +111,13 @@
 
       const totalCost = panelUpgradeCost + brandCost + serviceCost + trenchCost + utilityCost + permitFee + laborCost;
 
-      // Estimate avoided upgrade cost if Savant Smart Panel used (we assume 80% savings potential)
-      const savantAlternativeCost = 1500; // Flat estimate for Smart Panel install (customizable)
+      // Savant Smart Panel Cost Estimation
+      const cost20A = modules20A * 150;
+      const cost30A = modules30A * 250;
+      const cost60A = modules60A * 350;
+      const smartPanelInstall = 1000; // base install cost
+      const savantAlternativeCost = cost20A + cost30A + cost60A + smartPanelInstall;
+
       const savings = totalCost - savantAlternativeCost;
 
       // Output results
@@ -114,6 +133,13 @@
           <li>Utility Coordination: $${utilityCost.toFixed(2)}</li>
           <li>Permit Fees: $${permitFee.toFixed(2)}</li>
           <li>Labor: $${laborCost.toFixed(2)}</li>
+        </ul>
+        <strong>Savant Smart Panel Cost:</strong>
+        <ul>
+          <li>20A 120V Circuits: $${cost20A.toFixed(2)}</li>
+          <li>30A 240V Circuits: $${cost30A.toFixed(2)}</li>
+          <li>60A 240V Circuits: $${cost60A.toFixed(2)}</li>
+          <li>Base Installation: $${smartPanelInstall.toFixed(2)}</li>
         </ul>
       `;
 
